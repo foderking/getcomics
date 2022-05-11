@@ -48,12 +48,13 @@ def makeTmpFolder(root, comic):
 def downloadAllPages(pages, base_folder):
     all = enumerate(pages)
     for i, name in all:
-        print(f"\rDownloading page {i}", end="\r")
+        print(f" Downloading page {i}", end="\r")
         r = requests.get(name, stream=True)
         if r.status_code == requests.codes.ok:
             with open(f"downloads/{base_folder}/{i}.jpg", 'wb') as f:
                 for data in r:
                     f.write(data)
+    print()
 
 def zipFile(filename, desination_folder):
     shutil.make_archive(filename, "zip", desination_folder)
@@ -62,7 +63,7 @@ def printinfo(message):
     print(c["g"], "[+]", message, c["end"])
 
 def printblue(message):
-    print(c["g"], "[+]", message, c["end"])
+    print(c["b"], "[+]", message, c["end"])
 
 def printwarn(message):
     print(c["r"], "[+]", message, c["end"])
@@ -75,7 +76,9 @@ def doComic(comic_url):
     makeTmpFolder("comics", comic_name)
     # get links to all chapters of the comic 
     chapters = getChapterLinks(comic_url)
+    print("="*30)
     printinfo(f"To download: {len(chapters)} chapters for {comic_name}")
+    print("="*30)
     for chapter in chapters:
         chp = chapter.split("/")
         folder_name = comic_name + "/" + chp[-1]
@@ -89,23 +92,35 @@ def doComic(comic_url):
         # downloads all the pages in chapter
         all_pages = getChapterPages(chapter)
         downloadAllPages(all_pages, folder_name)
+
+        print(" Download success!.")
         # creates a zipped file of the whole chapter in working directory
+        printinfo("Moving file to comic dir")
         zipFile(chp[-1], "downloads/"+folder_name)
         # moves the file in cbz format to the comics folder
         renameFile(chp[-1], comic_name)
+        print(" Finished download all chapters")
 
 def renameFile(filename, root):
     os.rename(filename+".zip", "comics/"+root+"/"+filename+".cbz")
 
-try:
-    os.mkdir("downloads")
-except:
-    pass
-try:
-    os.mkdir("comics")
-except:
+def main():
+    try:
+        os.mkdir("downloads")
+    except:
+        pass
+    try:
+        os.mkdir("comics")
+    except:
+        pass
     
+    links = [each.strip() for each in open("links.txt", "r").readlines()]
+    for link in links:
+        doComic(link)
 
 
-example = "https://www.comicextra.com/comic/avengers-by-jonathan-hickman-omnibus"
-doComic(example)
+# TODO: 
+# - continue downloads from where they stop
+# - choose between zip and cbz
+if __name__ == "__main__":
+    main()

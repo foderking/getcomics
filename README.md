@@ -12,8 +12,8 @@ Download comics from https://comicextra.com
 
 Type the following commands in your terminal (eg. Powershell, xterm etc)
 ```bash
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/foderking/getcomics
+cd getcomics
 pip3 install -r requirements.txt
 ```
 
