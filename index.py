@@ -29,7 +29,7 @@ def parseComicName(link):
 
 def getChapterLinks(comic):
     s = getHtmlSoup(comic)
-    return [each["href"] for each in s.table.find_all("a")]
+    return [each["href"] for each in s.table.find_all("a")][::-1] # reversed cause I noticed chapters are sorted by newest
 
 def getChapterPages(page_link):
     soup = getHtmlSoup(page_link+"/full")
